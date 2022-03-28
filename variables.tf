@@ -17,7 +17,7 @@ variable "enable_firewall_bootstrap" {
 
 
 variable "vpc_name" {
-  default     = "GWLBe-spoke"
+  default     = "GWLBe"
   description = "Provide VPC name"
 }
 
