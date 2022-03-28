@@ -1,11 +1,11 @@
 variable "account" {
   description = "Provide Aviatrix Access Account Name"
-  default = "aws-lab-jye"
+  default     = "aws-lab-jye"
 }
 
 variable "key_pair_name" {
   description = "Provide EC2 key pair name"
-  default = "ec2-key-pair"  
+  default     = "ec2-key-pair"
 }
 variable "region" {
   default = "us-west-1"
@@ -41,4 +41,77 @@ variable "tags" {
 
 variable "gwlb_endpoint_service_name" {
   default = "com.amazonaws.vpce.us-west-1.vpce-svc-02e8866f03e63eaf6"
+}
+
+
+variable "subnets" {
+  default = {
+    "app1" = {
+      "gwlbe" = {
+        "usw1-az1" = "10.100.0.0/28"
+        "usw1-az3" = "10.100.0.16/28"
+      }
+      "nlb" = {
+        "usw1-az1" = "10.100.0.32/28"
+        "usw1-az3" = "10.100.0.48/28"
+      }
+    }
+    "app2" = {
+      "gwlbe" = {
+        "usw1-az1" = "10.100.64./28"
+        "usw1-az3" = "10.100.0.80/28"
+      }
+      "nlb" = {
+        "usw1-az1" = "10.100.0.96/28"
+        "usw1-az3" = "10.100.0.112/28"
+      }
+    }
+  }
+}
+
+variable "zone_ids" {
+  default = [
+    "usw1-az1",
+    "usw1-az3"
+  ]
+}
+
+variable "app_names" {
+  default = [
+    "app1",
+    "app2"
+  ]
+}
+
+variable "gwlbe_subnets" {
+  default = {
+    "app1" = {
+      "usw1-az1" = "10.100.0.0/28"
+      "usw1-az3" = "10.100.0.16/28"
+    }
+    "app2" = {
+      "usw1-az1" = "10.100.64./28"
+      "usw1-az3" = "10.100.0.80/28"
+    }
+  }
+}
+
+variable "lb_subnets" {
+  default = {
+    "app1" = {
+      "usw1-az1" = "10.100.0.32/28"
+      "usw1-az3" = "10.100.0.48/28"
+    }
+    "app2" = {
+      "usw1-az1" = "10.100.0.96/28"
+      "usw1-az3" = "10.100.0.112/28"
+    }
+  }
+}
+
+variable "gw_subnets" {
+  default = {
+    "usw1-az1" = "10.100.0.224/28"
+    "usw1-az3" = "10.100.0.240/28"
+  }
 }
