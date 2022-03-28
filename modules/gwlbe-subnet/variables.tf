@@ -1,7 +1,3 @@
-variable "availability_zones_count" {
-  
-}
-
 variable "vpc_id" {
   
 }
@@ -14,11 +10,11 @@ variable "vpc_name" {
 
 }
 
-variable "newbits" {
+variable "app_name" {
   
 }
 
-variable "aws_availability_zone_names" {
+variable "subnet" {
   
 }
 

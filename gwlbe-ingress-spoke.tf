@@ -47,18 +47,18 @@ resource "aws_route_table" "gwlbe_route_table" {
   }
 }
 
-# # Create GWLB endpoint subnet, route table, route table association and GWLB endpoints
-# module "gwlbe" {
-#   source = "./modules/gwlbe-subnet"
-#   availability_zones_count = var.availability_zones_count
-#   vpc_id = aws_vpc.ingress.id
-#   vpc_cidr = var.vpc_cidr
-#   newbits = local.newbits
-#   aws_availability_zone_names = data.aws_availability_zones.available.names
-#   vpc_name = var.vpc_name
-#   route_table_id = aws_route_table.gwlbe_route_table.id
-#   gwlb_endpoint_service_name = var.gwlb_endpoint_service_name
-# }
+# Create GWLB endpoint subnet, route table, route table association and GWLB endpoints
+module "gwlbe" {
+  source = "./modules/gwlbe-subnet"
+  for_each = var.gwlbe_subnets
+  vpc_id = aws_vpc.ingress.id
+  vpc_cidr = var.vpc_cidr
+  vpc_name = var.vpc_name
+  route_table_id = aws_route_table.gwlbe_route_table.id
+  gwlb_endpoint_service_name = var.gwlb_endpoint_service_name
+  app_name = each.key
+  subnet = each.value
+}
 
 
 # # Create NLB subnet, route table, route table association
