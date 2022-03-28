@@ -9,13 +9,13 @@ module "gwlbe_ingress_spoke_app_subnets" {
   cidr_block = each.value
 }
 
-# module "gwlbe_ingress_spoke_instance" {
-#   source    = "./modules/aws-linux-vm-public"
-#   count     = var.availability_zones_count
-#   vm_name   = "gwlbe-ingress-spoke-instance-${count.index+1}"
-#   vpc_id    = aws_vpc.ingress.id
-#   subnet_id = module.gwlbe_ingress_spoke_app_subnets.subnets[count.index].subnet_id
-#   key_name  = var.key_pair_name
-# }
+module "gwlbe_ingress_spoke_instance" {
+  source    = "./modules/aws-linux-vm-public"
+  for_each   = var.test_app_subnets
+  vm_name   = "gwlbe-ingress-spoke-instance-${each.key}"
+  vpc_id    = aws_vpc.ingress.id
+  subnet_id = module.gwlbe_ingress_spoke_app_subnets[each.key].subnet.id
+  key_name  = var.key_pair_name
+}
 
 
