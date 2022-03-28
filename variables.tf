@@ -69,19 +69,6 @@ variable "subnets" {
   }
 }
 
-variable "zone_ids" {
-  default = [
-    "usw1-az1",
-    "usw1-az3"
-  ]
-}
-
-variable "app_names" {
-  default = [
-    "app1",
-    "app2"
-  ]
-}
 
 variable "gwlbe_subnets" {
   default = {
@@ -113,5 +100,12 @@ variable "gw_subnets" {
   default = {
     "usw1-az1" = "10.100.0.224/28"
     "usw1-az3" = "10.100.0.240/28"
+  }
+}
+
+variable "test_app_subnets" {
+  default = {
+    "usw1-az1" = "10.100.0.192/28"
+    "usw1-az3" = "10.100.0.208/28"
   }
 }

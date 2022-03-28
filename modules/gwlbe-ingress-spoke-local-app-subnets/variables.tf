@@ -1,7 +1,3 @@
-variable "availability_zones_count" {
-  
-}
-
 variable "vpc_id" {
   
 }
@@ -13,18 +9,15 @@ variable "vpc_name" {
   
 }
 
-variable "aws_availability_zone_names" {
-  
-}
 
 variable "gateway_id" {
 
 }
 
-variable "newbits" {
+variable "cidr_block" {
   
 }
 
-variable "max_netnum" {
+variable "zone_id" {
   
 }

@@ -1,14 +1,13 @@
-# module "gwlbe_ingress_spoke_app_subnets" {
-#   source                      = "./modules/gwlbe-ingress-spoke-local-app-subnets"
-#   availability_zones_count    = var.availability_zones_count
-#   vpc_id                      = aws_vpc.ingress.id
-#   vpc_cidr                    = var.vpc_cidr
-#   newbits                     = local.newbits
-#   aws_availability_zone_names = data.aws_availability_zones.available.names
-#   vpc_name                    = var.vpc_name
-#   gateway_id                  = aws_internet_gateway.igw.id
-#   max_netnum                  = local.max_netnum
-# }
+module "gwlbe_ingress_spoke_app_subnets" {
+  source     = "./modules/gwlbe-ingress-spoke-local-app-subnets"
+  for_each   = var.test_app_subnets
+  vpc_id     = aws_vpc.ingress.id
+  vpc_cidr   = var.vpc_cidr
+  vpc_name   = var.vpc_name
+  gateway_id = aws_internet_gateway.igw.id
+  zone_id    = each.key
+  cidr_block = each.value
+}
 
 # module "gwlbe_ingress_spoke_instance" {
 #   source    = "./modules/aws-linux-vm-public"
