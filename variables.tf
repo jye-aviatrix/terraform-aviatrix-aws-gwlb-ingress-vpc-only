@@ -105,7 +105,13 @@ variable "gw_subnets" {
 
 variable "test_app_subnets" {
   default = {
-    "usw1-az1" = "10.100.0.192/28"
-    "usw1-az3" = "10.100.0.208/28"
+    "app1" = {
+      "usw1-az1" = "10.100.0.160/28"
+      "usw1-az3" = "10.100.0.176/28"
+    }
+    "app2" = {
+      "usw1-az1" = "10.100.0.192/28"
+      "usw1-az3" = "10.100.0.208/28"
+    }
   }
 }

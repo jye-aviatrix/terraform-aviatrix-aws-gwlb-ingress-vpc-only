@@ -1,16 +1,18 @@
-## Create subnet for Aviatrix Spoke Gateways
+## Create subnet for local test app
 resource "aws_subnet" "subnet" {
+  for_each = var.subnet
   vpc_id               = var.vpc_id
-  cidr_block           = var.cidr_block
-  availability_zone_id = var.zone_id
+  cidr_block           = each.value
+  availability_zone_id = each.key
   tags = {
-    zone_id = var.zone_id
-    Name    = "${var.vpc_name}-test-app-subnet-${var.zone_id}"
+    zone_id = each.key
+    Name    = "${var.vpc_name}-${var.app_name}-subnet-${each.key}"
   }
 }
 
-## Create route tables for Aviatrix Spoke Gateways
+## Create route tables for local test app
 resource "aws_route_table" "route_table" {
+  for_each = var.subnet
   vpc_id = var.vpc_id
   route {
     cidr_block = "0.0.0.0/0"
@@ -22,16 +24,17 @@ resource "aws_route_table" "route_table" {
   }
 
   tags = {
-    zone_id = var.zone_id
-    Name    = "${var.vpc_name}-test-app-subnet-${var.zone_id}"
+    zone_id = each.key
+    Name    = "${var.vpc_name}-${var.app_name}-subnet-${each.key}"
   }
 }
 
 
-## Create route table association for Aviatrix Spoke Gateways
+## Create route table association for local test app
 resource "aws_route_table_association" "gw_route_table_association" {
-  subnet_id      = aws_subnet.subnet.id
-  route_table_id = aws_route_table.route_table.id
+  for_each = aws_subnet.subnet
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.route_table[each.key].id
 }
 
 

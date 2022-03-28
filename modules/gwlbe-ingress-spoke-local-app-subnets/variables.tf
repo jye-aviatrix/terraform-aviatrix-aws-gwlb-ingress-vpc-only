@@ -14,10 +14,10 @@ variable "gateway_id" {
 
 }
 
-variable "cidr_block" {
+variable "app_name" {
   
 }
 
-variable "zone_id" {
+variable "subnet" {
   
 }
