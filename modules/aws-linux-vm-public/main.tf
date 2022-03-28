@@ -120,3 +120,7 @@ output "instance_id" {
 output "private_ip" {
   value = aws_instance.this.private_ip
 }
+
+output "tags" {
+  value = aws_instance.this.tags
+}

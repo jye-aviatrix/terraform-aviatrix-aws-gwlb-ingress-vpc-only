@@ -16,6 +16,10 @@ module "gwlbe_ingress_spoke_instance" {
   vpc_id    = aws_vpc.ingress.id
   subnet_id = module.gwlbe_ingress_spoke_app_subnets[each.value["app"]].subnet[each.value["zone"]].id
   key_name  = var.key_pair_name
+  tags = {
+      app = each.value["app"]
+      zone = each.value["zone"]
+  }
 }
 
 
