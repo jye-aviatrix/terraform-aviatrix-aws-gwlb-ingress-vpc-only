@@ -74,28 +74,30 @@ module "nlb_subnets" {
 }
 
 
-# # Create route tables for IGW edge, associate NLB subnet CIDR with GWLB endpoint in corresponding AZ
-# resource "aws_route_table" "igw_route_table" {
-#   vpc_id            = aws_vpc.ingress.id
-#   dynamic "route" {
-#     for_each = module.nlb_subnets.nlb_subnets
-#     content {
-#       cidr_block = route.value.cidr_block
-#       vpc_endpoint_id = module.gwlbe.gwlbe[route.key]
-#     }
-#   }
+# Create route tables for IGW edge, associate NLB subnet CIDR with GWLB endpoint in corresponding AZ
+resource "aws_route_table" "igw_route_table" {
+  vpc_id            = aws_vpc.ingress.id
+  dynamic "route" {
+    for_each = merge([for app in keys(var.gwlbe_subnets) : {for zone_id in keys(var.gwlbe_subnets[app]) : module.nlb_subnets[app].nlb_subnets[zone_id].cidr_block => module.gwlbe[app].gwlbe[zone_id]}]...)
+    content {
+      cidr_block = route.key
+      vpc_endpoint_id = route.value
+    }
+  }
 
-#   tags = {
-#     Name = "${var.vpc_name}-igw-edge-route-table"
-#   }
-#   depends_on = [
-#     module.nlb_subnets
-#   ]
-# }
+  tags = {
+    Name = "${var.vpc_name}-igw-edge-route-table"
+  }
+  depends_on = [
+    module.nlb_subnets,
+    module.gwlbe
+  ]
+}
 
-# # Associate IGW edge route to IGW
-# resource "aws_route_table_association" "igw_edge_association" {
-#   gateway_id      = aws_internet_gateway.igw.id
-#   route_table_id = aws_route_table.igw_route_table.id
-# }
+
+# Associate IGW edge route to IGW
+resource "aws_route_table_association" "igw_edge_association" {
+  gateway_id      = aws_internet_gateway.igw.id
+  route_table_id = aws_route_table.igw_route_table.id
+}
 
