@@ -61,17 +61,17 @@ module "gwlbe" {
 }
 
 
-# # Create NLB subnet, route table, route table association
-# module "nlb_subnets" {
-#   source = "./modules/nlb-subnet"
-#   availability_zones_count = var.availability_zones_count
-#   vpc_id = aws_vpc.ingress.id
-#   vpc_cidr = var.vpc_cidr
-#   newbits = local.newbits
-#   aws_availability_zone_names = data.aws_availability_zones.available.names
-#   vpc_name = var.vpc_name
-#   gwlbe = module.gwlbe.gwlbe
-# }
+# Create NLB subnet, route table, route table association
+module "nlb_subnets" {
+  source = "./modules/nlb-subnet"
+  for_each = var.lb_subnets
+  vpc_id = aws_vpc.ingress.id
+  vpc_cidr = var.vpc_cidr
+  vpc_name = var.vpc_name
+  gwlbe = module.gwlbe[each.key].gwlbe
+  app_name = each.key
+  subnet = each.value
+}
 
 
 # # Create route tables for IGW edge, associate NLB subnet CIDR with GWLB endpoint in corresponding AZ

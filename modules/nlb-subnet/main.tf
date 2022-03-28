@@ -1,22 +1,22 @@
 # Create NLB subnet
 resource "aws_subnet" "nlb_subnets" {
-  count             = var.availability_zones_count
+  for_each = var.subnet
   vpc_id            = var.vpc_id
-  cidr_block        = cidrsubnet(var.vpc_cidr, var.newbits, (count.index + var.availability_zones_count ))
-  availability_zone = var.aws_availability_zone_names[count.index]
+  cidr_block        = each.value
+  availability_zone_id =  each.key
   tags = {
-    az_index = count.index
-    Name = "${var.vpc_name}-nlb-subnet-${count.index + 1}-${var.aws_availability_zone_names[count.index]}"
+    zone_id = each.key
+    Name = "${var.vpc_name}-${var.app_name}-nlb-subnet-${each.key}"
   }
 }
 
 ## Create route tables for NLB subnets
 resource "aws_route_table" "nlb_route_tables" {
-  count             = var.availability_zones_count
+  for_each = var.subnet
   vpc_id            = var.vpc_id
   route {
     cidr_block = "0.0.0.0/0"
-    vpc_endpoint_id = var.gwlbe[count.index]
+    vpc_endpoint_id = var.gwlbe[each.key]
   }
 
   lifecycle {
@@ -24,22 +24,22 @@ resource "aws_route_table" "nlb_route_tables" {
   }
 
   tags = {
-    az_index = count.index
-    Name = "${var.vpc_name}-nlb-subnet-${count.index + 1}-${var.aws_availability_zone_names[count.index]}"
+    zone_id = each.key
+    Name = "${var.vpc_name}-${var.app_name}-nlb-subnet-${each.key}"
   }
 }
 
 ## Create route table association for NLB subnets
 resource "aws_route_table_association" "nlb_route_table_association" {
-  count          = var.availability_zones_count
-  subnet_id      = aws_subnet.nlb_subnets[count.index].id
-  route_table_id = aws_route_table.nlb_route_tables[count.index].id 
+  for_each = aws_route_table.nlb_route_tables
+  subnet_id      = aws_subnet.nlb_subnets[each.value.tags.zone_id].id
+  route_table_id = each.value.id 
 }
 
 output "nlb_subnets" {
   value = {
     for nlb_subnet in aws_subnet.nlb_subnets:
-    nlb_subnet.tags.az_index => {
+    nlb_subnet.tags.zone_id => {
       cidr_block = nlb_subnet.cidr_block
       subnet_id = nlb_subnet.id
     }
