@@ -3,14 +3,10 @@ Code is currently developed to run locally with following:
 
 * Linux (Windows Subsystem for Linux)
 * Terraform
-* AWS CLI
 
 Following environment variables need to be set
 ```bash
 # environment variables
-export AVIATRIX_CONTROLLER_IP='xx.xx.xx.xx'
-export AVIATRIX_PASSWORD='***********'
-export AVIATRIX_USERNAME='admin'
 export AWS_ACCESS_KEY_ID='AK**************'
 export AWS_SECRET_ACCESS_KEY='************************'
 ```
@@ -37,54 +33,29 @@ Palo Alto Networks VM-Series Next-Generation Firewall (BYOL)
 10.1.3
 ```
 
-```
-Aviatrix Controller
-UserConnect-6.6.5404
-```
-
-## Technical challenges
-1. Aviatrix Firenet module currently doesn't return Gateway Load Balancer's Service Name
-    * as such a bash script **get_vpce_service_name_from_fw_lan.sh** is called to translate:
-    * Firewall LAN ENI -> Firewall LAN Subnet -> Asscoaited GWLB -> Associated VPC Endpoint Service -> VPC Endpoint Service Name
-2. **module.app_spoke.vpc.public_subnets** count cannot be obtained during intial apply, workaround is to use bash wrapper **tfapply.sh** , which creates the application spoke, then copy app-spoke-instances.tf.2ndstage and app-spoke-load-balancers.tf.2ndstage to app-spoke-instances.tf and app-spoke-load-balancers.tf, then apply again
-
 
 ## How to run
 1. Modify **variables.tf** provide:
-    * Aviatrix access account name
     * EC2 key pair name for test web servers
     * Region of the deployment
-    * Choose whether bootstrap the Palo firewalls or not, if enable bootstrap, provides:
-        * S3 bucket name
-        * iam role for accessing the content of S3 bucket
-2. Run **tfapply.sh**
-3. Configure the egress transit firenet Palo Altos by following these steps
-    
-    https://docs.aviatrix.com/HowTos/transit_firenet_workflow_aws_gwlb.html?highlight=gwlb#palo-alto-network-pan 
-
-    * Step 3 can be skipped, as no need to active license
-    * Step 4 can be skipped, as Firewall is configured as one-armed mode, there's no WAN port
-    * Step 6 can be skipped, as again Firewall is one-armed mode, there's no need for route table changes
-4. East West transit Firenet firewalls not need to be configured for ingress, but it's there for additional E/W tranffic filtering.
-5. Test web servers are deployed on subnets with 0/0 pointing to IGW, this is to allow the initial bootstrap of web server. You may remove 0/0 route after the deployment.
+    * VPC name
+    * VPC CIDR
+    * GWLB Endpoint Service - Service Name
+    * Declaration of subnets for GWLB endpoints
+    * Declaration of subnets for NLB/ALB
+    * Declaration of subnets for Aviatrix Spoke Gateways
+    * Declaration of subnets for test web servers
+2. Test web servers are deployed on subnets with 0/0 pointing to IGW, this is to allow the initial bootstrap of web server. You may remove 0/0 route after the deployment.
 
 
-## Environment created
-* GWLB enabled Egress Transit Firenet
-* GWLB enabled East-West Transit Firenet
+## Environment creates by the code
 * GWLBe-Spoke VPC
     * IGW & Edge Route
     * GWLBe subnets and Route Tables
     * Load Balancer subnets and Route Tables
-    * GWLB endpoint from GWLB Transit Firenet GWLB
+    * GWLB endpoints
     * GWLBe-Spoke local App Subnets
     * GWLBe-Spoke local test Web Servers
     * GWLBe-spoke local ALB/NLB pointing to local test Web Servers
-    * Spoke GWs and attach to both Transit Firenet
-* App-Spoke VPC
-    * Spoke GWs and attach to both Transit Firenet
-    * App-Spoke test web servers
-    * ALB/NLB (Located in GWLBe-Spoke VPC load balancer subnets) pointing to App-Spoke test web servers
 
-
-![Environment created](2022-03-14-19-41-35.png)
+![Environment created](2022-03-28-21-40-29.png)
