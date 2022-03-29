@@ -21,10 +21,17 @@ resource "aws_lb_target_group" "gwlbe_ingress_spoke_local_app_nlb_tg" {
 }
 
 
+# resource "aws_lb_target_group_attachment" "gwlbe_ingress_spoke_local_app_nlb_tg_attachment" {
+#   for_each         = merge([for app in keys(aws_lb_target_group.gwlbe_ingress_spoke_local_app_nlb_tg) : { for zone in module.gwlbe_ingress_spoke_instance : "${app}-${zone.instance_id}" => { app = app, instance_id = zone.instance_id } if zone.tags.app == app}]...) 
+#   target_group_arn = aws_lb_target_group.gwlbe_ingress_spoke_local_app_nlb_tg[each.value["app"]].arn
+#   target_id        = each.value["instance_id"]
+#   port             = 80
+# }
+
 resource "aws_lb_target_group_attachment" "gwlbe_ingress_spoke_local_app_nlb_tg_attachment" {
-  for_each         = merge([for app in keys(aws_lb_target_group.gwlbe_ingress_spoke_local_app_nlb_tg) : { for zone in module.gwlbe_ingress_spoke_instance : "${app}-${zone.instance_id}" => { app = app, instance_id = zone.instance_id } if zone.tags.app == app}]...) 
+  for_each         = merge([for app in keys(var.test_app_subnets) : {for zone in keys(var.test_app_subnets[app]) : "${app}-${zone}" => {app=app,zone=zone}}]...)
   target_group_arn = aws_lb_target_group.gwlbe_ingress_spoke_local_app_nlb_tg[each.value["app"]].arn
-  target_id        = each.value["instance_id"]
+  target_id        = [for k,v in module.gwlbe_ingress_spoke_instance : v.instance_id if v.tags["app"]==each.value["app"] && v.tags["zone"]==each.value["zone"]][0]
   port             = 80
 }
 
@@ -101,10 +108,17 @@ resource "aws_lb_target_group" "gwlbe_ingress_spoke_local_app_alb_tg" {
 }
 
 
+# resource "aws_lb_target_group_attachment" "gwlbe_ingress_spoke_local_app_alb_tg_attachment" {
+#   for_each         = merge([for app in keys(aws_lb_target_group.gwlbe_ingress_spoke_local_app_alb_tg) : { for zone in module.gwlbe_ingress_spoke_instance : "${app}-${zone.instance_id}" => { app = app, instance_id = zone.instance_id } if zone.tags.app == app}]...)
+#   target_group_arn = aws_lb_target_group.gwlbe_ingress_spoke_local_app_alb_tg[each.value["app"]].arn
+#   target_id        = each.value["instance_id"]
+#   port             = 80
+# }
+
 resource "aws_lb_target_group_attachment" "gwlbe_ingress_spoke_local_app_alb_tg_attachment" {
-  for_each         = merge([for app in keys(aws_lb_target_group.gwlbe_ingress_spoke_local_app_alb_tg) : { for zone in module.gwlbe_ingress_spoke_instance : "${app}-${zone.instance_id}" => { app = app, instance_id = zone.instance_id } if zone.tags.app == app}]...)
+  for_each         = merge([for app in keys(var.test_app_subnets) : {for zone in keys(var.test_app_subnets[app]) : "${app}-${zone}" => {app=app,zone=zone}}]...)
   target_group_arn = aws_lb_target_group.gwlbe_ingress_spoke_local_app_alb_tg[each.value["app"]].arn
-  target_id        = each.value["instance_id"]
+  target_id        = [for k,v in module.gwlbe_ingress_spoke_instance : v.instance_id if v.tags["app"]==each.value["app"] && v.tags["zone"]==each.value["zone"]][0]
   port             = 80
 }
 
