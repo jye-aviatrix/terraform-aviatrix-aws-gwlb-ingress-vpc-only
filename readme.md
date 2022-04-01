@@ -46,7 +46,8 @@ Palo Alto Networks VM-Series Next-Generation Firewall (BYOL)
     * Declaration of subnets for Aviatrix Spoke Gateways
     * Declaration of subnets for test web servers
 2. Test web servers are deployed on subnets with 0/0 pointing to IGW, this is to allow the initial bootstrap of web server. You may remove 0/0 route after the deployment.
-
+3. For cross account access, add permission on the endpoint service, so that the other account can create service endpoint:
+https://docs.aws.amazon.com/vpc/latest/privatelink/add-endpoint-service-permissions.html
 
 ## Environment creates by the code
 * GWLBe-Spoke VPC
