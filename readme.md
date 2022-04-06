@@ -36,6 +36,7 @@ Palo Alto Networks VM-Series Next-Generation Firewall (BYOL)
 
 ## How to run
 1. Modify **variables.tf** provide:
+    * make sure the AZ zone ID match existing GWLB endpoints zone IDs.
     * EC2 key pair name for test web servers
     * Region of the deployment
     * VPC name
