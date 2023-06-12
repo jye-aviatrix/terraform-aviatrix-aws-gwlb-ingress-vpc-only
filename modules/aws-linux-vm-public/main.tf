@@ -46,7 +46,7 @@ EOF
 
 
 resource "aws_eip" "this" {
-  vpc = true
+  domain = "vpc"
 
   instance = aws_instance.this.id
   tags     = local.tags
@@ -63,7 +63,7 @@ resource "aws_security_group" "this" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${data.http.ip.body}/32"]
+    cidr_blocks = ["${data.http.ip.response_body}/32"]
   }
 
   ingress {
